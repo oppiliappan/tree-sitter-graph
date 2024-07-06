@@ -220,6 +220,7 @@ impl ast::Statement {
             Self::DeclareImmutable(stmt) => stmt.check(ctx),
             Self::DeclareMutable(stmt) => stmt.check(ctx),
             Self::Assign(stmt) => stmt.check(ctx),
+            Self::Expr(stmt) => stmt.check(ctx),
             Self::CreateGraphNode(stmt) => stmt.check(ctx),
             Self::AddGraphNodeAttribute(stmt) => stmt.check(ctx),
             Self::CreateEdge(stmt) => stmt.check(ctx),
@@ -261,6 +262,15 @@ impl ast::Assign {
         used_captures.extend(value.used_captures.iter().cloned());
         let var_result = self.variable.check_set(ctx, value.into())?;
         used_captures.extend(var_result.used_captures);
+        Ok(StatementResult { used_captures })
+    }
+}
+
+impl ast::ExpressionStatement {
+    fn check(&mut self, ctx: &mut CheckContext) -> Result<StatementResult, CheckError> {
+        let mut used_captures = HashSet::new();
+        let value = self.value.check(ctx)?;
+        used_captures.extend(value.used_captures.iter().cloned());
         Ok(StatementResult { used_captures })
     }
 }

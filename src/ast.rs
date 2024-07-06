@@ -81,6 +81,7 @@ pub enum Statement {
     DeclareImmutable(DeclareImmutable),
     DeclareMutable(DeclareMutable),
     Assign(Assign),
+    Expr(ExpressionStatement),
     // Graph nodes
     CreateGraphNode(CreateGraphNode),
     AddGraphNodeAttribute(AddGraphNodeAttribute),
@@ -103,6 +104,7 @@ impl std::fmt::Display for Statement {
             Self::DeclareImmutable(stmt) => stmt.fmt(f),
             Self::DeclareMutable(stmt) => stmt.fmt(f),
             Self::Assign(stmt) => stmt.fmt(f),
+            Self::Expr(stmt) => stmt.fmt(f),
             Self::CreateGraphNode(stmt) => stmt.fmt(f),
             Self::AddGraphNodeAttribute(stmt) => stmt.fmt(f),
             Self::CreateEdge(stmt) => stmt.fmt(f),
@@ -161,6 +163,29 @@ impl std::fmt::Display for AddGraphNodeAttribute {
             write!(f, " {}", attr)?;
         }
         write!(f, " at {}", self.location)
+    }
+}
+
+/// An `expression` statement whose output is ignored
+#[derive(Debug, Eq, PartialEq)]
+pub struct ExpressionStatement {
+    pub value: Expression,
+    pub location: Location,
+}
+
+impl From<ExpressionStatement> for Statement {
+    fn from(statement: ExpressionStatement) -> Statement {
+        Statement::Expr(statement)
+    }
+}
+
+impl std::fmt::Display for ExpressionStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{} at {}",
+            self.value, self.location,
+        )
     }
 }
 

@@ -15,6 +15,7 @@ use tree_sitter::Tree;
 use crate::ast::AddEdgeAttribute;
 use crate::ast::AddGraphNodeAttribute;
 use crate::ast::Assign;
+use crate::ast::ExpressionStatement;
 use crate::ast::Attribute;
 use crate::ast::AttributeShorthand;
 use crate::ast::AttributeShorthands;
@@ -231,6 +232,7 @@ impl Statement {
             Statement::DeclareImmutable(s) => s.location,
             Statement::DeclareMutable(s) => s.location,
             Statement::Assign(s) => s.location,
+            Statement::Expr(s) => s.location,
             Statement::CreateGraphNode(s) => s.location,
             Statement::AddGraphNodeAttribute(s) => s.location,
             Statement::CreateEdge(s) => s.location,
@@ -248,6 +250,7 @@ impl Statement {
             Statement::DeclareImmutable(statement) => statement.execute(exec),
             Statement::DeclareMutable(statement) => statement.execute(exec),
             Statement::Assign(statement) => statement.execute(exec),
+            Statement::Expr(statement) => statement.execute(exec),
             Statement::CreateGraphNode(statement) => statement.execute(exec),
             Statement::AddGraphNodeAttribute(statement) => statement.execute(exec),
             Statement::CreateEdge(statement) => statement.execute(exec),
@@ -278,6 +281,12 @@ impl Assign {
     fn execute(&self, exec: &mut ExecutionContext) -> Result<(), ExecutionError> {
         let value = self.value.evaluate(exec)?;
         self.variable.set(exec, value)
+    }
+}
+
+impl ExpressionStatement {
+    fn execute(&self, exec: &mut ExecutionContext) -> Result<(), ExecutionError> {
+        self.value.evaluate(exec).map(|_| ())
     }
 }
 

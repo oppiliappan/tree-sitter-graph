@@ -229,6 +229,7 @@ impl ast::Statement {
             Self::DeclareImmutable(statement) => statement.execute_lazy(exec),
             Self::DeclareMutable(statement) => statement.execute_lazy(exec),
             Self::Assign(statement) => statement.execute_lazy(exec),
+            Self::Expr(statement) =>  statement.value.evaluate_lazy(exec).map(|_| ()),
             Self::CreateGraphNode(statement) => statement.execute_lazy(exec),
             Self::AddGraphNodeAttribute(statement) => statement.execute_lazy(exec),
             Self::CreateEdge(statement) => statement.execute_lazy(exec),

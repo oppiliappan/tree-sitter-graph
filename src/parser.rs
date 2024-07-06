@@ -482,6 +482,14 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_statement(&mut self) -> Result<ast::Statement, ParseError> {
+        if matches!(self.peek(), Ok( '#' | '"' | '@' | '$' | '(' | '[' | '{')) {
+            if let Ok(value) = self.parse_expression() {
+                return Ok(ast::Statement::Expr(ast::ExpressionStatement {
+                    location: self.location,
+                    value,
+                }));
+            }
+        }
         let keyword_location = self.location;
         let keyword = self.parse_name("keyword")?;
         self.consume_whitespace();
